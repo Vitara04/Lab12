@@ -81,14 +81,14 @@ TreeNode* ParseTree::build(string E, int left, int right)
     //cout << "building!\n" << E << "\n" << left;
     if (left == right) //a single operand
     {
-	/* changed one line down*/
-	return (new TreeNode(E[left]));
-	/*	
+	
+	//return (new TreeNode(E[left]));
+		
         string key = string(&E[left]);
         TreeNode *T;
         T = new TreeNode(key);
         return (new TreeNode(key));
-	*/
+	
     }
     TreeNode *T;
     int loc = findPlusMinus(E, left, right) ;
