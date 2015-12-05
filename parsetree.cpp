@@ -68,7 +68,7 @@ int ParseTree::getHeight()
         return (height(root));
 }
 
-void ParseTree::buildTree(string E)
+void ParseTree::buildTree(string E) // call build below recursively
 {
     root = build(E, 0, E.length()-1);
 }
@@ -77,27 +77,22 @@ void ParseTree::buildTree(string E)
 // to buildTree the parse tree from an infix expression
 TreeNode* ParseTree::build(string E, int left, int right)
 {
-
-    //cout << "building!\n" << E << "\n" << left;
     if (left == right) //a single operand
     {
-       // Extra "cout" line to act as debug line //
-        //string key;
-        //key = E.substr(left, right);
-        string key = string(&E[left]);
+        string key = string(&E[left]); //set node to left
         TreeNode *T;
         T = new TreeNode(key);
         return (new TreeNode(key));
     }
     TreeNode *T;
     int loc = findPlusMinus(E, left, right) ;
-    if(loc != -1)
+    if(loc != -1) // if plus or minus in expression:
     {
-        if(E[loc] == '+') T = new TreeNode("+");
-        else T = new TreeNode("-");
-        T->left = build(E, left, loc-1);
-        T->right = build(E, loc+1, right);
-        return T;
+        if(E[loc] == '+') T = new TreeNode("+"); //if +, add node "+"
+        else T = new TreeNode("-"); //same for minus
+        T->left = build(E, left, loc-1); //repeat to end of left leaf
+        T->right = build(E, loc+1, right); //same for right leaf
+        return T; //return node
     }
 
     loc = findMulDiv(E, left, right) ;
@@ -112,7 +107,7 @@ TreeNode* ParseTree::build(string E, int left, int right)
     return build(E, left, right-1); //parentheses eliminated
 }
 
-int ParseTree::findPlusMinus(string E, int left, int right)
+int ParseTree::findPlusMinus(string E, int left, int right) //find position of +- from right
 {   int parenCnt = 0, loc = right;
     while(loc >= left)
     {   if(E[loc] == ')')parenCnt++ ;
@@ -126,7 +121,7 @@ int ParseTree::findPlusMinus(string E, int left, int right)
     return -1 ;
 }
 
-int ParseTree::findMulDiv(string E, int left, int right)
+int ParseTree::findMulDiv(string E, int left, int right) //finds potisiotn of */ from right
 {   int parenCnt = 0, loc = right;
     while(loc >= left)
     {
