@@ -48,15 +48,15 @@ int ParseTree::height(TreeNode* T)
 {
         int hh = 0;
         int lh, rh;
-        if (T == NULL) return hh;
-        if ((T->left == NULL) && (T->right == NULL)) return (hh++);
+        if (T == NULL) return hh; //if no nodes/root, height = 0
+        if ((T->left == NULL) && (T->right == NULL)) return (hh++); //if no roots, height = 1
         lh = height(T->left);
         rh = height(T->right);
         if (lh >= rh)
             hh = lh + 1;
         else
             hh = rh + 1;
-        return hh;
+        return hh; //height set to longest path in tree + 1 for root
 }
 
 // return the height of the parse tree
@@ -81,23 +81,24 @@ TreeNode* ParseTree::build(string E, int left, int right)
     //cout << "building!\n" << E << "\n" << left;
     if (left == right) //a single operand
     {
-       // Extra "cout" line to act as debug line //
-        //string key;
-        //key = E.substr(left, right);
+	
+	//return (new TreeNode(E[left]));
+		
         string key = string(&E[left]);
         TreeNode *T;
         T = new TreeNode(key);
         return (new TreeNode(key));
+	
     }
     TreeNode *T;
     int loc = findPlusMinus(E, left, right) ;
-    if(loc != -1)
+    if(loc != -1) //if there's a plus or minus there:
     {
-        if(E[loc] == '+') T = new TreeNode("+");
-        else T = new TreeNode("-");
-        T->left = build(E, left, loc-1);
-        T->right = build(E, loc+1, right);
-        return T;
+        if(E[loc] == '+') T = new TreeNode("+"); //if +, add node "+"
+        else T = new TreeNode("-"); //it's a minus
+        T->left = build(E, left, loc-1); //repeat to end of left leaf
+        T->right = build(E, loc+1, right); //repeat to end of right leaf
+        return T; //return node
     }
 
     loc = findMulDiv(E, left, right) ;
@@ -109,10 +110,10 @@ TreeNode* ParseTree::build(string E, int left, int right)
         T->right = build(E, loc+1, right);
         return T;
     }
-    return build(E, left, right-1); //parentheses eliminated
+    return build(E, left+1, right-1); //parentheses eliminated
 }
 
-int ParseTree::findPlusMinus(string E, int left, int right)
+int ParseTree::findPlusMinus(string E, int left, int right)// finds position of +- from right
 {   int parenCnt = 0, loc = right;
     while(loc >= left)
     {   if(E[loc] == ')')parenCnt++ ;
@@ -126,7 +127,7 @@ int ParseTree::findPlusMinus(string E, int left, int right)
     return -1 ;
 }
 
-int ParseTree::findMulDiv(string E, int left, int right)
+int ParseTree::findMulDiv(string E, int left, int right) //finds position of */ from right
 {   int parenCnt = 0, loc = right;
     while(loc >= left)
     {
@@ -149,35 +150,35 @@ void ParseTree::printTree()
         queue<int> levelList;
         TreeNode* current = NULL;
         int printDepth = this->getHeight();
-        int possibleNodes = static_cast<int>(pow(2.0, printDepth + 1));
+        int possibleNodes = static_cast<int>(pow(2.0, printDepth + 1)); // i think possible nodes = 2^(height+1)
         int countNodes = 0;
         
-        nodes.push(root);
+        nodes.push(root); //add root to front of nodes
         int currentLevel = 0;
         int previousLevel = -1;
-        levelList.push(currentLevel);
+        levelList.push(currentLevel); //level added to front of levelList
         
         while (countNodes < possibleNodes) 
         {
             countNodes = countNodes + 1;
-            if (!nodes.empty())  
+            if (!nodes.empty())  //if there was a root
             {    
-                current = nodes.front();
-                nodes.pop();
+                current = nodes.front(); //adjust current to be nodes[0] (first in vector)
+                nodes.pop();  //gets rid of element from stack
             }
             if (!levelList.empty())
             {    
-                currentLevel = levelList.front();
+                currentLevel = levelList.front(); //same as prior, but for levelList
                 levelList.pop();
             }
             if (currentLevel > previousLevel)
             {
                 cout << endl << endl;
-                previousLevel = currentLevel;
+                previousLevel = currentLevel; //adjust level for next round
                 for (int j = 0; j < int ((pow(2.0, (printDepth - currentLevel))) - 1); j++)
                 cout << setw(FORMAT_WIDTH)<< " ";
             }
-            else
+            else //at a leaf
             {
                 for (int i = 0; i < int ((pow(2.0, (printDepth - currentLevel + 1 )) - 1)) ; i++) 
                 {
